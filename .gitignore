@@ -1,0 +1,6 @@
+pipeline/
+warmup_results/
+*.json
+.env
+__pycache__/
+*.pyc
