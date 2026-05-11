@@ -44,6 +44,7 @@ Step 4 — 发送 DM:
 
 Step 5 — 更新 Excel:
   → 每完成一批 warmup/send，更新 LED_Display_Leads_v17.xlsx 追踪列
+  → 新采集的账号（pipeline 中有但 Excel 中没有的）也要追加新行到 Excel
 ```
 
 ### 辅助命令
@@ -90,18 +91,24 @@ output/leads/
 | Warmup Date | 日期 YYYY-MM-DD |
 | DM Sent Date | 发送日期 |
 | DM Platform | instagram / facebook / whatsapp |
-| DM Message | 消息前 100 字预览 |
+| DM Message (preview) | 消息前 100 字预览 |
 | Touch Count | 触达次数（最多 2） |
 | Lead Status | prospect / warmed / messaged / hot / cold |
 
-**更新时机**：每批 warmup / send 完成后立即更新，按 Instagram 用户名或公司名匹配行。
+**更新规则（每次 warmup / send 后必须执行）**：
+
+1. **已有账号**：按 Instagram/Facebook 用户名匹配行，更新追踪列，warmup 标绿色、messaged 标黄色
+2. **新账号（pipeline 有但 Excel 没有）**：在表格末尾追加新行，填入所有已知字段（用户名、公司名、国家、城市、平台、业务描述），同时写入追踪列
+3. 不论账号来源（原始名单还是新采集），只要做了 warmup 或 send，都必须在 Excel 中有记录
 
 ```python
-# 更新示例（openpyxl）
+# 追加新行示例（openpyxl）
 from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 wb = load_workbook("LED_Display_Leads_v17.xlsx")
 ws = wb["LED Leads - All Markets"]
-# 找到目标行，更新 Warmup Done / Warmup Date 列
+# 新行数据按表头顺序填写，追踪列同步写入
+ws.append([no, region, country, city, company_en, ..., warmup_done, warmup_date, ...])
 wb.save("LED_Display_Leads_v17.xlsx")
 ```
 
